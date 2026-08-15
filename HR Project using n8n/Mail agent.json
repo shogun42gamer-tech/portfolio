@@ -1,0 +1,173 @@
+{
+  "name": "Mail agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "candidate_id"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1760a2f2-18f7-4b2a-bdc7-1bab02b94f7e",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT email\nFROM candidates\nWHERE candidate_id = $1;",
+        "options": {
+          "queryReplacement": "={{ $json.candidate_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        256,
+        0
+      ],
+      "id": "0eccb3aa-44fd-4ce3-bd29-21bbd21f4803",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "pDoPU7tDhbLZiysn",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=this is email id:{{ $json.email }}.\nthis is the meeting url :https://us05web.zoom.us/meetings/6548917690/invitations?signature=0DvNhFEGxLgUhv321kZ9zrOLa7JNbB1kdgXBmWKAvlU",
+        "options": {
+          "systemMessage": "Use the email id to draft a mail . It is mail regarding shortlisting of a candidate . Formulate mail accordingly.\nAlso provide the meeting link in the mail for the candidate."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "d5571ec1-c9f7-4b05-8230-f5413c5c6c92",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        208
+      ],
+      "id": "aef08df3-7ab6-4d23-a9e3-cf0542a47be5",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "QNrXPOLmrlIusixb",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to draft a mail to the email ",
+        "resource": "draft",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "html",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "sendTo": "={{ $json.email }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        784,
+        208
+      ],
+      "id": "dedbb746-d0e2-4782-86af-af1c6c2504be",
+      "name": "Create a draft in Gmail",
+      "webhookId": "926be0d9-380c-48d1-aedd-300d3c485160",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "auG5ZosGHkrj9PZE",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "dfba0090-2508-4fee-84e0-399863252f64",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e882e3963ee50fed8e7399180dd4981543daa51211a2ae03ad21bfb3fe5099a9"
+  },
+  "nodeGroups": [],
+  "id": "CsL68piNG5GvaLgD",
+  "tags": []
+}

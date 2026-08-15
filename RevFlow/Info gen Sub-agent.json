@@ -1,0 +1,164 @@
+{
+  "name": "Info gen Sub-agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.client_details_input }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Search for people/clients that best fits User requirements . Gather their personal information through web search via tools. Provide Data for Max 3 clients only . And reply in structured format only.\n\nuser input :{{ $json.client_details_input }}\n\nBased on the user input , iterate through  the tool multiple times to get information for the clients . \n\nMCP client1:\nUSe this to search for clients information like name ,email etc. \n\n "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -336,
+        288
+      ],
+      "id": "4d68c177-c407-4c75-8e67-0e192ae0dced",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"client\":\n  [\n  {\n\t\"First_Name\":\"first name of client\",\n    \"Last_Name\":\"Last name of client\",\n    \"Role\":\"Role of the client in company\",\n    \"Company\":\"The name of client's Company\",\n    \"Email\":\"email of the client\",\n    \"Phone No\":\"Phone number of client\"\n  }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        512
+      ],
+      "id": "5812dcb0-f23e-4507-8fa7-9f5b66291c11",
+      "name": "Structured Output Parser",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        512
+      ],
+      "id": "96a2c5aa-daaf-4779-b3ea-457a1884d700",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "oJ2HDTkQUVPuex8O",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://mcp.hunter.io/mcp",
+        "authentication": "bearerAuth",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.4,
+      "position": [
+        -272,
+        512
+      ],
+      "id": "667e2dca-0669-4b32-8847-03badcca7b47",
+      "name": "MCP Client1",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "PvzXpZYSgOf1nhxK",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "client_details_input"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -624,
+        288
+      ],
+      "id": "e90bdb6d-d8bb-4e0f-8ea3-aeca654d1125",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d331acd3-00fd-4aab-b5a2-fa7d71624e05",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e882e3963ee50fed8e7399180dd4981543daa51211a2ae03ad21bfb3fe5099a9"
+  },
+  "nodeGroups": [],
+  "id": "hM2qmlxWlOtvt59a",
+  "tags": []
+}

@@ -1,0 +1,719 @@
+{
+  "name": "Electronics retrive + Semantic QA cache",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "load",
+        "tableName": {
+          "__rl": true,
+          "value": "qa_cache",
+          "mode": "list",
+          "cachedResultName": "qa_cache"
+        },
+        "prompt": "={{ $json.message.text }}",
+        "topK": 1,
+        "options": {
+          "queryName": "match_qa_cache"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "alwaysOutputData": true,
+      "position": [
+        -1104,
+        96
+      ],
+      "id": "609855d5-ffd7-4516-8820-1140048267d6",
+      "name": "Supabase Vector Store (qa cache search)",
+      "credentials": {
+        "supabaseApi": {
+          "id": "u9fitZ95cXjGctor",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const first = items[0]?.json;\nconst score = typeof first?.score === 'number' ? first.score : 0;\nreturn [{\n  json: {\n    chatInput: $('Telegram Trigger').first().json.message.text,\n    score,\n    answer: first?.document?.metadata?.answer ?? null\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        96
+      ],
+      "id": "aec631aa-6917-4f30-bb76-5e3d81e8e05b",
+      "name": "Normalize Cache Read"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8259d83e-3067-4023-b5fa-4727281e017d",
+              "leftValue": "={{ $json.score }}",
+              "rightValue": 0.9,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -528,
+        96
+      ],
+      "id": "8a1cfe4c-bd9b-4489-bd5c-0d824d12c476",
+      "name": "Semantic Cache Hit?",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "99acad12-e29b-41a2-aa7b-05bbb5bd54ac",
+              "name": "output",
+              "value": "={{ $json.answer }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -96,
+        -48
+      ],
+      "id": "b46e66f7-7978-4bc8-b08c-51985a5a43a8",
+      "name": "Set Cached Answer",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "You are a computer accessory assistant . Provide Short and concise outputs . You are a customer support Agent so keep the answer under 5-6 sentences only .\n\nYou have access to various tools.\n- A retriver as a tool that contains information related to computer components and accessories . \n",
+          "enableStreaming": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -240,
+        256
+      ],
+      "id": "1d041828-ceb0-4231-a5c3-6e480f43eb82",
+      "name": "AI Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1f9fed8-7ae4-4350-91e8-e904324187d6",
+              "name": "Question",
+              "value": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "e2e47947-9215-4f5e-95a8-04729e396aff",
+              "name": "Answer",
+              "value": "={{ $('AI Agent').item.json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        256
+      ],
+      "id": "0bf2ee39-9f79-4e8c-a63b-dc79afb8e93d",
+      "name": "Edit Fields (question/answer)"
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.Question }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "answer",
+                "value": "={{ $json.Answer }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        480
+      ],
+      "id": "f4c5638a-e6fe-48c6-bf56-c3754f276cff",
+      "name": "Default Data Loader (qa writeback)"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "qa_cache",
+          "mode": "list",
+          "cachedResultName": "qa_cache"
+        },
+        "options": {
+          "queryName": "match_qa_cache"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        256
+      ],
+      "id": "2a8dc3a2-6b49-4c4e-9528-1a690038117c",
+      "name": "Supabase Vector Store (qa cache insert)",
+      "credentials": {
+        "supabaseApi": {
+          "id": "u9fitZ95cXjGctor",
+          "name": "Supabase account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fb9b629d-dbf4-43d7-b13e-acfa5eb9dd3d",
+              "name": "output",
+              "value": "={{ $('AI Agent').item.json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        256
+      ],
+      "id": "8049bd9d-b441-4719-a14d-413e0e53d76e",
+      "name": "Set Reply (pass through)"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -512,
+        512
+      ],
+      "id": "05dcd949-d801-499e-9b6d-894c61cc1c8d",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zUjRBeMWCmEiGXi5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1024,
+        320
+      ],
+      "id": "1ec801fb-852a-4536-9a3c-fab62c9e8707",
+      "name": "Embeddings Google Gemini (search)",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zUjRBeMWCmEiGXi5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        544,
+        480
+      ],
+      "id": "b7b96787-1397-4115-ac47-5ee9cd8f0a9a",
+      "name": "Embeddings Google Gemini (writeback)",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zUjRBeMWCmEiGXi5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        752,
+        688
+      ],
+      "id": "d481fe74-02b9-40cb-9602-7bd5ffa6b2ce",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "use this tool to get computer component related informations.",
+        "tableName": {
+          "__rl": true,
+          "value": "knowledge_base",
+          "mode": "list",
+          "cachedResultName": "knowledge_base"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        480
+      ],
+      "id": "5e515e86-5499-4b7c-98d4-0329d74e1706",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "u9fitZ95cXjGctor",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        48,
+        688
+      ],
+      "id": "ade7074b-8e8e-466e-bb4d-c4bf1c9a27e8",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "zUjRBeMWCmEiGXi5",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -192,
+        512
+      ],
+      "id": "0d12f95c-051f-4ae6-9dfd-b50c3d8954c4",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -1344,
+        80
+      ],
+      "id": "99a24674-ecfb-4a3a-bc08-ffa37e2dbc15",
+      "name": "Telegram Trigger",
+      "webhookId": "ee379d02-133f-430b-9a56-7c493cfd3ddf",
+      "credentials": {
+        "telegramApi": {
+          "id": "kGf9u99fHHNOxDZS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        368,
+        0
+      ],
+      "id": "c42f730c-4b95-4c47-8283-a5bdcebfd060",
+      "name": "Send a text message",
+      "webhookId": "69807de8-b05c-4fd6-8c7f-445f80e4c84e",
+      "credentials": {
+        "telegramApi": {
+          "id": "kGf9u99fHHNOxDZS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        256
+      ],
+      "id": "2606edf5-1800-4cf3-b21d-daf2e0dcc668",
+      "name": "Send a text message1",
+      "webhookId": "23244b9b-d934-404b-9cd7-e3b6ac5d0f94",
+      "credentials": {
+        "telegramApi": {
+          "id": "kGf9u99fHHNOxDZS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3a8ce91b-32ca-4d47-931f-21138e34e3de",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "null",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        128,
+        -48
+      ],
+      "id": "1025ec87-01aa-4c31-b81e-9f71da7bdb37",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -352,
+        512
+      ],
+      "id": "11d514db-b0e4-4df5-b935-cefefb8ef588",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "RJQyLPm8NBEvR9WL",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Supabase Vector Store (qa cache search)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Cache Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Cache Read": {
+      "main": [
+        [
+          {
+            "node": "Semantic Cache Hit?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Semantic Cache Hit?": {
+      "main": [
+        [
+          {
+            "node": "Set Cached Answer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader (qa writeback)": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store (qa cache insert)",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store (qa cache insert)": {
+      "main": [
+        [
+          {
+            "node": "Set Reply (pass through)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini (search)": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store (qa cache search)",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini (writeback)": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store (qa cache insert)",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader (qa writeback)",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields (question/answer)": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store (qa cache insert)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Cached Answer": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store (qa cache search)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields (question/answer)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d2bef4c9-db0c-4767-b387-a63f5804bf3a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b9ff70e36d6f4f71dab5ab09361dd6ec9a54543dee7739937a8284db8b81bedf"
+  },
+  "nodeGroups": [],
+  "id": "Ugyh5qoBdNAMcHpz",
+  "tags": []
+}

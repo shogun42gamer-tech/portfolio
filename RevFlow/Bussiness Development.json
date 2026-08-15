@@ -1,0 +1,388 @@
+{
+  "name": "Bussiness Development",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        112,
+        -32
+      ],
+      "id": "399963f4-b5ee-4b35-8673-9b421b6de5dd",
+      "name": "When chat message received",
+      "webhookId": "6b16e754-5041-4f60-990c-3fcef4bad970"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a given access to three tools .\n\nInfo-gen Agent:\nThis tool generates information of the clients when invoked by specifying a type of client desired by user. Example:\"i am looking to sell my AI automations to US clients . please find me 5 clients\"\n\nRev-ops Agent:\nThis tool creates leads in the CRM . \nIMPORTANT TIP:Make sure to repeatively call this tools for every object in the list sent by info-gen agent tool.\n\nSDR-agent:\nThis tool drafts mails to all the leads by fetching their information from the CRM.\nIMPORTANT TIP:Finally use to tool to compulsorily send mails to each person/lead.\n\nDeal creation Sub-agent:\nThis tool creates a deal for a person name provided.\nProvide a command to create a deal for a person demanded by user.\nALWAYS ASK USER BEFORE CREATING A DEAL .\n\nDemo booking sub agent:\nThis tool checks availability in calender and creates a event in the calender based on provided date and time by the user . Example:\"Book a demo for daniel on 17th august 2026 from 3pm to 3:15pm IST\".\nALWAYS BOOK A DEMO ONLY WHEN USER ASKS FOR IT. AND ALWAYS ASK THE USER FOR DATE AND TIME."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        528,
+        -32
+      ],
+      "id": "99661975-c1dc-482e-b616-9a054f08ecf0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.6-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        336,
+        192
+      ],
+      "id": "f5034cc8-6507-4b3a-b80b-c7743f4c32d6",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "QNrXPOLmrlIusixb",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "call this tool to create leads in pipedrive CRM.",
+        "workflowId": {
+          "__rl": true,
+          "value": "pz69qxSgbezLirIq",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/pz69qxSgbezLirIq",
+          "cachedResultName": "RevOps Sub-Agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Information_objects": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Information_objects', ``, 'json') }}"
+          },
+          "matchingColumns": [
+            "Information_objects"
+          ],
+          "schema": [
+            {
+              "id": "Information_objects",
+              "displayName": "Information_objects",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "object"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        192
+      ],
+      "id": "dd8ebaa0-c690-45b4-addf-0d5c1fd7c5fe",
+      "name": "Call 'RevOps Sub-Agent'"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to send mails to the leads from the pipedrive CRM.",
+        "workflowId": {
+          "__rl": true,
+          "value": "FeJIAfOSbUsBjBdI",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/FeJIAfOSbUsBjBdI",
+          "cachedResultName": "SDR Sub-agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "mail_instructions": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('mail_instructions', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "mail_instructions"
+          ],
+          "schema": [
+            {
+              "id": "mail_instructions",
+              "displayName": "mail_instructions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        192
+      ],
+      "id": "744f44cc-24b8-44d2-a6eb-6d71bdc19f15",
+      "name": "Call 'SDR Sub-agent'"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.6,
+      "position": [
+        464,
+        192
+      ],
+      "id": "ef398d2d-595e-48fb-9cab-4aaec4dda011",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "VI0hsg8RwipQT2pJ",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "pPvUOduVE65ZczpU",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/pPvUOduVE65ZczpU",
+          "cachedResultName": "deal_creation Sub-agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "command": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('command', `This is the description to provide input to the sub-agent to create a deal for a person name provided.`, 'string') }}"
+          },
+          "matchingColumns": [
+            "command"
+          ],
+          "schema": [
+            {
+              "id": "command",
+              "displayName": "command",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        976,
+        192
+      ],
+      "id": "59fb35da-d203-4f78-b218-fb5477c16dd2",
+      "name": "Call 'deal_creation Sub-agent'"
+    },
+    {
+      "parameters": {
+        "description": "Use this tool to check availability and create calender event .",
+        "workflowId": {
+          "__rl": true,
+          "value": "zVAcOrVUXr1iyq3W",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/zVAcOrVUXr1iyq3W",
+          "cachedResultName": "Demo booking Sub agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "colab_command": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('colab_command', `This is the description for a input that helps to check availability and create event in the calender.`, 'string') }}"
+          },
+          "matchingColumns": [
+            "colab_command"
+          ],
+          "schema": [
+            {
+              "id": "colab_command",
+              "displayName": "colab_command",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        192
+      ],
+      "id": "f3373f14-c8a8-451a-8fce-d094a8feccbf",
+      "name": "Call 'Demo booking Sub agent'"
+    },
+    {
+      "parameters": {
+        "description": "Call this tool to get information about the clients as per user's need.",
+        "workflowId": {
+          "__rl": true,
+          "value": "hM2qmlxWlOtvt59a",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/hM2qmlxWlOtvt59a",
+          "cachedResultName": "Info gen Sub-agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "client_details_input": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('client_details_input', `This is the input to fetch client details from the internet that best fits user requrement.`, 'string') }}"
+          },
+          "matchingColumns": [
+            "client_details_input"
+          ],
+          "schema": [
+            {
+              "id": "client_details_input",
+              "displayName": "client_details_input",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        192
+      ],
+      "id": "76e45ee8-de0f-4a1b-b01a-f28b5f632e31",
+      "name": "Call 'Info gen Sub-agent'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'RevOps Sub-Agent'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'SDR Sub-agent'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'deal_creation Sub-agent'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Demo booking Sub agent'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Info gen Sub-agent'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "28d68a76-d514-44b1-9de0-8fdc7c6da63b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e882e3963ee50fed8e7399180dd4981543daa51211a2ae03ad21bfb3fe5099a9"
+  },
+  "nodeGroups": [],
+  "id": "nKh2lkEFox97Tuid",
+  "tags": []
+}

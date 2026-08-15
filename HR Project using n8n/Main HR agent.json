@@ -1,0 +1,284 @@
+{
+  "name": "Main HR agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "09e49e48-3d32-46fb-bd37-46bb1102b359",
+      "name": "When chat message received",
+      "webhookId": "c3fc0f0f-a873-4a01-9058-4103560613b5"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Use are equipped with tools .\n\nCall 'HR Agent RAG':\nUse this tool to get relevant information about the candidate .\n\nCall 'Mail agent':\nuse this tool to draft mails using candidate id. \nthis tool takes a candidate id - String as input.\n\nCall 'Schedule Meeting':\nUse this tool to schedule a meeting with a candidate.\nInput the tools like 'Arrange a meeting for [Candidate name] from [time slot ] on [date].\n\nIMPORTANT:USE CANDIDATE ID FROM 'HR Agent RAG' TOOL TO DRAFT A MAIL. AND ALWAYS ASK THE USER BEFORE DRAFTING A MAIL OR SCHEDULING A MEETING."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        352,
+        0
+      ],
+      "id": "6af41f09-fcdd-4125-9ed8-cf3533004d97",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.6-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "a600d161-47c2-4d2b-94d2-fc62f5428d70",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "QNrXPOLmrlIusixb",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Use this tool to retrive relevant candidate information and candidate id . ",
+        "workflowId": {
+          "__rl": true,
+          "value": "IQZ94yJ24CVs6Gg6",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/IQZ94yJ24CVs6Gg6",
+          "cachedResultName": "HR Agentic RAG"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', `Send a query to retrive relavant candidate information here.`, 'string') }}"
+          },
+          "matchingColumns": [
+            "query"
+          ],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        224
+      ],
+      "id": "44d355d6-cac4-43ca-9360-f158149cfe21",
+      "name": "Call 'HR Agentic RAG'"
+    },
+    {
+      "parameters": {
+        "description": "Use this tool to draft a mail using candidate id .",
+        "workflowId": {
+          "__rl": true,
+          "value": "CsL68piNG5GvaLgD",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/CsL68piNG5GvaLgD",
+          "cachedResultName": "Mail agent"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "candidate_id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('candidate_id', `Send only the candidate id as a string here . `, 'string') }}"
+          },
+          "matchingColumns": [
+            "candidate_id"
+          ],
+          "schema": [
+            {
+              "id": "candidate_id",
+              "displayName": "candidate_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        224
+      ],
+      "id": "5a844c03-db33-4d35-817b-6aa39a426ea7",
+      "name": "Call 'Mail agent'"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.6,
+      "position": [
+        352,
+        224
+      ],
+      "id": "c9414a11-3a3a-484b-a199-b1783da6932a",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "VI0hsg8RwipQT2pJ",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "u7zMnEdoEqfhKXCQ",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/u7zMnEdoEqfhKXCQ",
+          "cachedResultName": "Shedule meeting"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "meeting": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('meeting', `This is the description to a agent to assign a meeting.`, 'string') }}"
+          },
+          "matchingColumns": [
+            "meeting"
+          ],
+          "schema": [
+            {
+              "id": "meeting",
+              "displayName": "meeting",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        736,
+        224
+      ],
+      "id": "b35400b7-58a7-4f6b-a69a-9c09af0a1d42",
+      "name": "Call 'Shedule meeting'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'HR Agentic RAG'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Mail agent'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Shedule meeting'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0579febe-95c1-4395-83ee-e22dafb05dcd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e882e3963ee50fed8e7399180dd4981543daa51211a2ae03ad21bfb3fe5099a9"
+  },
+  "nodeGroups": [],
+  "id": "DEsqdKpCSaORly9F",
+  "tags": []
+}

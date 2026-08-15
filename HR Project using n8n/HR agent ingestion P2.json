@@ -1,0 +1,1143 @@
+{
+  "name": "HR agent ingestion P2",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Upload_your_resume_here",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1056,
+        544
+      ],
+      "id": "521e3cf7-69b2-42ea-ac97-fd1c64b5834a",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Resume text from previous node\nconst resumeText = $input.first().json.text;\n\n// ---------- Email ----------\nlet sanitized = resumeText.replace(\n  /\\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\b/gi,\n  \"[EMAIL]\"\n);\n\n// ---------- Phone ----------\nsanitized = sanitized.replace(\n  /(\\+?\\d{1,3}[\\s\\-]?)?(\\(?\\d{2,5}\\)?[\\s\\-]?)?[\\d\\s\\-]{7,15}\\d/g,\n  \"[PHONE]\"\n);\n\n// ---------- LinkedIn ----------\nsanitized = sanitized.replace(\n  /https?:\\/\\/(www\\.)?linkedin\\.com\\/[^\\s]+/gi,\n  \"[LINKEDIN]\"\n);\n\n// ---------- GitHub ----------\nsanitized = sanitized.replace(\n  /https?:\\/\\/(www\\.)?github\\.com\\/[^\\s]+/gi,\n  \"[GITHUB]\"\n);\n\n// ---------- Portfolio / Personal Website ----------\nsanitized = sanitized.replace(\n  /https?:\\/\\/(?!www\\.linkedin\\.com)(?!github\\.com)[^\\s]+/gi,\n  \"[PORTFOLIO]\"\n);\n\n// ---------- DOB Labels ----------\nsanitized = sanitized.replace(\n  /(date\\s*of\\s*birth|dob)\\s*[:\\-]?\\s*.*$/gim,\n  \"[DOB]\"\n);\n\n// ---------- Common Date Formats ----------\nsanitized = sanitized.replace(\n  /\\b\\d{1,2}[\\/\\-]\\d{1,2}[\\/\\-]\\d{2,4}\\b/g,\n  \"[DATE]\"\n);\n\nsanitized = sanitized.replace(\n  /\\b\\d{1,2}\\s+(Jan|January|Feb|February|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|September|Oct|October|Nov|November|Dec|December)\\s+\\d{2,4}\\b/gi,\n  \"[DATE]\"\n);\n\n// ---------- Address Labels ----------\nsanitized = sanitized.replace(\n  /(address|current address|permanent address)\\s*:\\s*.*$/gim,\n  \"[ADDRESS]\"\n);\n\n// ---------- Name Labels ----------\nsanitized = sanitized.replace(\n  /^(name)\\s*:\\s*.*$/gim,\n  \"[NAME]\"\n);\n\n// ---------- Optional: Remove first line if it looks like a person's name ----------\n// Assumes first line contains only 2-4 capitalized words.\nconst lines = sanitized.split(\"\\n\");\n\nif (\n  lines.length > 0 &&\n  /^[A-Z][a-z]+(?:\\s+[A-Z][a-z]+){1,3}$/.test(lines[0].trim())\n) {\n  lines[0] = \"[NAME]\";\n}\n\nsanitized = lines.join(\"\\n\");\n\nreturn [\n  {\n    json: {\n      sanitized_resume: sanitized\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        160
+      ],
+      "id": "746427df-321a-48e0-97a8-bf07b2a6451a",
+      "name": "Code Sanitized"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Resume text from previous node\nconst resume = $json.text || \"\";\n\n// -------------------------\n// Extract Email\n// -------------------------\nconst emailRegex = /\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b/g;\nconst emails = [...new Set(resume.match(emailRegex) || [])];\n\n// -------------------------\n// Extract Phone Numbers\n// -------------------------\nconst phoneRegex =\n/(?:\\+?\\d{1,3}[\\s.-]?)?(?:\\(?\\d{2,5}\\)?[\\s.-]?)?\\d{5}[\\s.-]?\\d{5}|\\+?\\d[\\d\\s()-]{8,}\\d/g;\n\nconst phones = [...new Set(\n    (resume.match(phoneRegex) || [])\n        .map(p => p.trim())\n        .filter(p => p.replace(/\\D/g, \"\").length >= 10)\n)];\n\n// -------------------------\n// LinkedIn\n// -------------------------\nconst linkedinRegex =\n/https?:\\/\\/(www\\.)?linkedin\\.com\\/[^\\s]+/gi;\n\nconst linkedin =\n[...new Set(resume.match(linkedinRegex) || [])];\n\n// -------------------------\n// GitHub\n// -------------------------\nconst githubRegex =\n/https?:\\/\\/(www\\.)?github\\.com\\/[^\\s]+/gi;\n\nconst github =\n[...new Set(resume.match(githubRegex) || [])];\n\n// -------------------------\n// Portfolio Websites\n// -------------------------\nconst websiteRegex =\n/https?:\\/\\/(?!.*linkedin)(?!.*github)[^\\s]+/gi;\n\nconst portfolio =\n[...new Set(resume.match(websiteRegex) || [])];\n\n// -------------------------\n// Candidate Name (heuristic)\n// -------------------------\nlet candidateName = \"\";\n\nconst lines = resume\n.split(\"\\n\")\n.map(l => l.trim())\n.filter(Boolean);\n\nfor (const line of lines.slice(0,8)) {\n\n    if (\n        line.length < 40 &&\n        !line.includes(\"@\") &&\n        !/\\d/.test(line) &&\n        /^[A-Za-z.' -]+$/.test(line)\n    ) {\n        candidateName = line;\n        break;\n    }\n}\n\n// -------------------------\n// Address (simple heuristic)\n// -------------------------\nlet address = \"\";\n\nconst addressRegex =\n/(?:Address|Location)\\s*:?\\s*(.+)/i;\n\nconst addr = resume.match(addressRegex);\n\nif(addr){\n    address = addr[1].trim();\n}\n\n// -------------------------\n// Sanitize Resume\n// -------------------------\nlet sanitized = resume;\n\n// Email\nemails.forEach(e=>{\n    sanitized = sanitized.replaceAll(e,\"[EMAIL]\");\n});\n\n// Phone\nphones.forEach(p=>{\n    sanitized = sanitized.replaceAll(p,\"[PHONE]\");\n});\n\n// LinkedIn\nlinkedin.forEach(l=>{\n    sanitized = sanitized.replaceAll(l,\"[LINKEDIN]\");\n});\n\n// GitHub\ngithub.forEach(g=>{\n    sanitized = sanitized.replaceAll(g,\"[GITHUB]\");\n});\n\n// Portfolio\nportfolio.forEach(p=>{\n    sanitized = sanitized.replaceAll(p,\"[PORTFOLIO]\");\n});\n\n// DOB Labels\nsanitized = sanitized.replace(\n  /(date\\s*of\\s*birth|dob)\\s*[:\\-]?\\s*.*$/gim,\n  \"[DOB]\"\n);\n\n// Common Date Formats\nsanitized = sanitized.replace(\n  /\\b\\d{1,2}[\\/\\-]\\d{1,2}[\\/\\-]\\d{2,4}\\b/g,\n  \"[DATE]\"\n);\n\nsanitized = sanitized.replace(\n  /\\b\\d{1,2}\\s+(Jan|January|Feb|February|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|September|Oct|October|Nov|November|Dec|December)\\s+\\d{2,4}\\b/gi,\n  \"[DATE]\"\n);\n\n// Name Labels\nsanitized = sanitized.replace(\n  /^(name)\\s*:\\s*.*$/gim,\n  \"[NAME]\"\n);\n\n// Address\nif(address){\n    sanitized = sanitized.replace(address,\"[ADDRESS]\");\n}\n\n// Candidate Name\nif(candidateName){\n\n    const escaped =\n    candidateName.replace(/[.*+?^${}()|[\\]\\\\]/g,\"\\\\$&\");\n\n    sanitized =\n    sanitized.replace(new RegExp(escaped,\"g\"),\"[CANDIDATE_NAME]\");\n}\n\n// Remove excessive blank lines\nsanitized = sanitized\n.replace(/\\n{3,}/g,\"\\n\\n\")\n.trim();\n\n// Remove first line if it looks like a person's name\nconst sanitizedLines = sanitized.split(\"\\n\");\n\nif (\n  sanitizedLines.length > 0 &&\n  /^[A-Z][a-z]+(?:\\s+[A-Z][a-z]+){1,3}$/.test(sanitizedLines[0].trim())\n) {\n  sanitizedLines[0] = \"[NAME]\";\n}\n\nsanitized = sanitizedLines.join(\"\\n\");\n\n// -------------------------\n// Output\n// -------------------------\nreturn [{\n    json:{\n        candidate_name: candidateName,\n        emails,\n        phone_numbers: phones,\n        linkedin_urls: linkedin,\n        github_urls: github,\n        portfolio_urls: portfolio,\n        address,\n        sanitized_resume: sanitized\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        480
+      ],
+      "id": "9feb7940-e0bc-4d1d-a4e4-3bd0837aed1e",
+      "name": "Code Postgres"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "candidates",
+          "mode": "list",
+          "cachedResultName": "candidates"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "first_name": "={{ $('On form submission').item.json['First Name'] }}",
+            "last_name": "={{ $('On form submission').item.json['Last Name'] }}",
+            "email": "={{ $('On form submission').item.json.Email }}",
+            "phone": "={{ $('On form submission').item.json['Phone Number'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "candidate_id",
+              "displayName": "candidate_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "first_name",
+              "displayName": "first_name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_name",
+              "displayName": "last_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "address",
+              "displayName": "address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "outputColumns": [
+            "candidate_id"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -608,
+        480
+      ],
+      "id": "e6910b39-a32b-4e1f-b447-c76ec2c32d49",
+      "name": "Insert rows in a table",
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "pDoPU7tDhbLZiysn",
+          "name": "Postgres account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT candidate_id FROM candidates WHERE email = $1 OR phone = $2 ORDER BY (email = $1) DESC, candidate_id LIMIT 1;",
+        "options": {
+          "queryReplacement": [
+            "={{ $('Code Postgres').item.json.emails[0] }}",
+            "={{ $('Code Postgres').item.json.phone_numbers[0] }}"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        128,
+        544
+      ],
+      "id": "fa3deb52-245e-4370-b5ef-ddddfb1c2a2e",
+      "name": "Select rows from a table",
+      "credentials": {
+        "postgres": {
+          "id": "pDoPU7tDhbLZiysn",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Provide ATS score , Summary and extract skills using the sanitized resume and job description.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Provide summary of the sanitized resume in brief , make sure to add every detail .\nExtract Skills from the sanitized resume provided .\nProvide ATS score for the sanitized resume using the job description. And make sure the score is a float value out of 10.\n\nJob description:\n{{ $json.text }}\n\nSanitized Resume:\n{{ $('Code Sanitized').item.json.sanitized_resume }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        64,
+        48
+      ],
+      "id": "301ed8c9-5d70-43c1-8955-4c12822dc3a0",
+      "name": "AI Agent",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        272
+      ],
+      "id": "39b2c688-cb92-4760-a249-3f52fd78d7bb",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "QNrXPOLmrlIusixb",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"ATS\":\"ATS score here .Should be a number.\",\n    \"Resume_summary\":\"Summary of the resume here\",\n    \"Resume_skills\":\"Skills of the candidate from the resume here\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        272
+      ],
+      "id": "925384b4-adc9-4efe-9977-2c45a3047bc5",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.job_description_file_id }}"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -384,
+        160
+      ],
+      "id": "a7352ff3-c7ec-4894-9425-40af3f813326",
+      "name": "Download file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "bDlBtKv70WFkagZH",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        160
+      ],
+      "id": "4be76ca0-bd5a-41dd-9ba0-37476a7c7a0e",
+      "name": "Extract from job Description"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8a5b81ab-a910-49e9-ae69-4ca2b7a1161a",
+              "name": "Content",
+              "value": "=Summary: {{ $('Merge').item.json.output.Resume_summary }}\nATS: {{ $('Merge').item.json.output.ATS }}\nSkills: {{ $('Merge').item.json.output.Resume_skills }}",
+              "type": "string"
+            },
+            {
+              "id": "cff9e9de-00a5-44d9-bed0-4b752e8cbf18",
+              "name": "candidate_id",
+              "value": "={{ $('Merge').item.json.candidate_id }}",
+              "type": "string"
+            },
+            {
+              "id": "31e627c0-fc25-46a3-a6d9-857b3a5248dd",
+              "name": "Skills",
+              "value": "={{ $('Merge').item.json.output.Resume_skills }}",
+              "type": "string"
+            },
+            {
+              "id": "ecec21b6-065b-4763-bf9c-ca8a3c00b5cc",
+              "name": "ATS",
+              "value": "={{ $('Merge').item.json.output.ATS }}",
+              "type": "string"
+            },
+            {
+              "id": "3597c893-d341-43bb-82d6-f041e8d082c9",
+              "name": "processing_error",
+              "value": "={{ $json.error ? JSON.stringify($json.error) : \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "859e8145-f411-4c71-8da4-da9d5b8acd8a",
+              "name": "batch_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        400
+      ],
+      "id": "ff9699c4-bcba-4e27-97d7-9143550a7201",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        416,
+        400
+      ],
+      "id": "ccc5c2a8-5da7-4ceb-915a-ea70bce98a67",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "candidate_2",
+          "mode": "list",
+          "cachedResultName": "candidate_2",
+          "cachedResultUrl": ""
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        1792,
+        576
+      ],
+      "id": "681f850b-6796-43d9-a4da-b6c3b4943fe7",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "RRMnIFZADhWfGIeX",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        800
+      ],
+      "id": "62a243dc-004a-4c5f-af49-943d4361373a",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "QNrXPOLmrlIusixb",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $('Edit Fields').item.json.Content }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "candidate_id",
+                "value": "={{ $('Edit Fields').item.json.candidate_id }}"
+              },
+              {
+                "name": "ATS",
+                "value": "={{ $('Edit Fields').item.json.ATS }}"
+              },
+              {
+                "name": "Skills",
+                "value": "={{ $('Edit Fields').item.json.Skills }}"
+              },
+              {
+                "name": "name",
+                "value": "={{ $('On form submission').item.json['First Name'] + ' ' + $('On form submission').item.json['Last Name'] }}"
+              },
+              {
+                "name": "Batch_id",
+                "value": "={{ $('Edit Fields').item.json.batch_id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        1888,
+        800
+      ],
+      "id": "c5ecad31-811f-4830-a5cf-78849ebb1544",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 2000,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        1008
+      ],
+      "id": "4a90fd80-0b8d-41e5-ab11-dfbc8ebb667d",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "134cc109-04a5-4bc0-bcd3-46bced58fa55",
+              "leftValue": "={{ $json.exists }}",
+              "rightValue": "={{ $json.metadata.candidate_id }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1536,
+        400
+      ],
+      "id": "afe34b59-a671-435d-901d-a7c858e07d7f",
+      "name": "If1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE candidate_2\nSET metadata = jsonb_build_object(\n    'candidate_id', $1,\n    'ATS', $2,\n    'Skills', $3,\n    'batch_id', $4\n  ),\n  content = $5\nWHERE id = $6;",
+        "options": {
+          "queryReplacement": "=={{\n[\n  $('Edit Fields').item.json.candidate_id,\n  $('Edit Fields').item.json.ATS,\n  $('Edit Fields').item.json.Skills,\n  $('Edit Fields').item.json.batch_id,\n  $('Edit Fields').item.json.Content,\n  $json.id\n]\n}}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2256,
+        176
+      ],
+      "id": "82de8276-c186-43d8-a3f7-3cc105c1ab60",
+      "name": "Update a row",
+      "credentials": {
+        "postgres": {
+          "id": "mGk6DmfpuijZ69FF",
+          "name": "Postgres account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bd05289d-8b77-44e5-b51c-17eebe797a38",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        480
+      ],
+      "id": "bb37dd98-b071-4e4a-bfd8-e9ee4fd81998",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "formTitle": "Candidate Information form",
+        "formDescription": "Please Enter your Details .",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "First Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Last Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Phone Number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Upload your resume here",
+              "fieldType": "file",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -1504,
+        208
+      ],
+      "id": "9fcd8d0e-42bf-471c-b3c4-503ac921350d",
+      "name": "On form submission",
+      "webhookId": "97295dd0-629a-4456-accc-f08cb066f1e9"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT EXISTS (\n    SELECT 1\n    FROM candidate_2\n    WHERE metadata->>'candidate_id' = $1\n) AS exists;",
+        "options": {
+          "queryReplacement": "={{ $json.candidate_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1312,
+        400
+      ],
+      "id": "de801763-60b5-4354-87b1-d57c27c6ad00",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "mGk6DmfpuijZ69FF",
+          "name": "Postgres account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id FROM candidate_2 WHERE metadata->>'candidate_id' = $1;",
+        "options": {
+          "queryReplacement": "={{ $('Ready to Index').item.json.candidate_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1904,
+        176
+      ],
+      "id": "fc80e5c4-3782-461b-a2a6-e8e720338e29",
+      "name": "Execute a SQL query1",
+      "credentials": {
+        "postgres": {
+          "id": "mGk6DmfpuijZ69FF",
+          "name": "Postgres account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "763ac5b8-1b14-47db-b850-646752724104",
+                    "leftValue": "={{ $binary['Upload_your_resume_here'].fileName }}",
+                    "rightValue": "\\.pdf$",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "4089d9ce-c741-4e00-ac85-fdc0adfab4d3",
+                    "leftValue": "={{ $binary['Upload_your_resume_here'].fileName }}",
+                    "rightValue": "\\.docx$",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -1280,
+        192
+      ],
+      "id": "9f324151-da74-4318-9f40-438a10c34438",
+      "name": "Resume File Type"
+    },
+    {
+      "parameters": {
+        "operation": "docx"
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1056,
+        112
+      ],
+      "id": "5c4233c9-ee4c-4ab7-b024-79c1b07ee299",
+      "name": "Extract from File (docx)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "317ed071-818e-4abe-95fe-337ffff27466",
+              "name": "job_description_file_id",
+              "value": "11wvRbBwmGJPCe0-faoJvFaa7Ip_Uf1Sj",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        160
+      ],
+      "id": "f577be70-967f-4682-b8c6-4bbca55ac10c",
+      "name": "Job Description Config"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fd12b878-be1c-45dd-9228-4c62a367b14c",
+              "leftValue": "={{ $json.candidate_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "26813e3b-abdd-479d-a0bf-ec91758fa4ad",
+              "leftValue": "={{ $json.processing_error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1088,
+        400
+      ],
+      "id": "2223bda3-5b90-454a-9b01-ceb2f81566b4",
+      "name": "Ready to Index"
+    },
+    {
+      "parameters": {
+        "language": "pythonNative",
+        "pythonCode": "print(\"Invalid file type!!!\\n Provide Resume in pdf or docx format.\")"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1056,
+        304
+      ],
+      "id": "e39e0c55-ce47-471d-8f83-8cacd5a3ec2d",
+      "name": "Code in Python"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id\nFROM batches\nWHERE status = 'active'\nORDER BY created_at DESC\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        640,
+        400
+      ],
+      "id": "f8d6beef-2944-4ac4-9d59-0ad80596e97f",
+      "name": "Execute a SQL query2",
+      "credentials": {
+        "postgres": {
+          "id": "pDoPU7tDhbLZiysn",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code Postgres",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code Sanitized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Sanitized": {
+      "main": [
+        [
+          {
+            "node": "Job Description Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Description Config": {
+      "main": [
+        [
+          {
+            "node": "Download file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Postgres": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Extract from job Description",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from job Description": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Ready to Index",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ready to Index": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Resume File Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resume File Type": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File (docx)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in Python",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File (docx)": {
+      "main": [
+        [
+          {
+            "node": "Code Postgres",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code Sanitized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query1": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "915b5e5f-0532-4e7a-b29f-92dd5603023a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e882e3963ee50fed8e7399180dd4981543daa51211a2ae03ad21bfb3fe5099a9"
+  },
+  "nodeGroups": [],
+  "id": "OuTFZge9d0XC6W2Z",
+  "tags": []
+}

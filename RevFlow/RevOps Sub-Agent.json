@@ -1,0 +1,241 @@
+{
+  "name": "RevOps Sub-Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.Information_objects }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Always reply in a structured format. If you dont have a value for a record , then just store \"NULL\". "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "6376c22e-f56d-4779-ba45-0858ae676a22",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "5d1deb1f-f282-4868-aa7a-4a88c5b1d26f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "QNrXPOLmrlIusixb",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"contact_details\":\n  {\n\t\"First_Name\":\"first name of client\",\n    \"Last_Name\":\"Last name of client\",\n    \"Role\":\"Role of the client in company\",\n    \"Company\":\"The name of client's Company\",\n    \"Email\":\"email of the client\",\n    \"Phone No\":\"Phone number of client\"\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        384,
+        208
+      ],
+      "id": "e3de0fde-5859-4d19-977f-bedbdc45e5ac",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "resource": "person",
+        "name": "={{ $('AI Agent').item.json.output.contact_details.First_Name }} {{ $('AI Agent').item.json.output.contact_details.Last_Name }}",
+        "additionalFields": {
+          "emails": {
+            "emailProperties": [
+              {
+                "value": "={{ $('AI Agent').item.json.output.contact_details.Email }}"
+              }
+            ]
+          },
+          "org_id": "={{ $json.id }}",
+          "phones": {
+            "phoneProperties": [
+              {
+                "value": "={{ $('AI Agent').item.json.output.contact_details['Phone No'] }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "89054e16-6c57-4da4-a6ed-84ff57c63433",
+      "name": "Create a person",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "g5xOBT0aQjpGJdq5",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "organization",
+        "name": "={{ $json.output.contact_details.Company }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "02101282-5ec9-413b-bef9-aeb880bda7a0",
+      "name": "Create an organization",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "g5xOBT0aQjpGJdq5",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "lead",
+        "title": "={{ $json.name }} Lead",
+        "organization_id": "={{ $('Create an organization').item.json.id }}",
+        "additionalFields": {
+          "person_id": "={{ $json.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        976,
+        0
+      ],
+      "id": "697219a4-e90a-4cb7-bfb0-c27ed1dc0eba",
+      "name": "Create a lead",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "g5xOBT0aQjpGJdq5",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "Information_objects",
+              "type": "object"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "240cc5cc-ae13-4654-9978-6e033d041308",
+      "name": "When Executed by Another Workflow"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create an organization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a person": {
+      "main": [
+        [
+          {
+            "node": "Create a lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an organization": {
+      "main": [
+        [
+          {
+            "node": "Create a person",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "82158662-877b-4090-905b-b25e3bcd1fd4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e882e3963ee50fed8e7399180dd4981543daa51211a2ae03ad21bfb3fe5099a9"
+  },
+  "nodeGroups": [],
+  "id": "pz69qxSgbezLirIq",
+  "tags": []
+}
