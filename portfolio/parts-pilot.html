@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PartsPilot — Yashas Pareeshwad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="index.html#hero" class="logo"><span class="logo-mark">&lt;/&gt;</span> Yashas Pareeshwad</a>
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html#about">About</a>
+        <a href="index.html#skills">Skills</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#experience">Experience</a>
+        <a href="index.html#contact" class="nav-cta">Hire Me</a>
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="project-page">
+
+    <!-- ================================================================
+         PROJECT TITLE (Hero)
+    ================================================================ -->
+    <section class="project-hero">
+      <div class="project-hero-bg" aria-hidden="true"></div>
+      <div class="section-inner project-hero-inner">
+        <p class="project-tag reveal">AI AUTOMATION · N8N · RAG · SEMANTIC CACHING · TELEGRAM</p>
+        <h1 class="project-title reveal">PartsPilot <span class="gradient-text">Agentic Support Bot</span></h1>
+        <p class="project-sub reveal">An agentic Telegram customer-support bot for a computer accessories store. It answers product questions from a RAG knowledge base and uses semantic caching so repeated questions are answered instantly — without spending another LLM call.</p>
+        <div class="project-hero-meta reveal">
+          <a href="https://github.com/Yashas422005/Portfolio-Projects/tree/2ab4c71aba073d7b2ae66ab8cffb999f4ef97620/PartsPilot" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         PROBLEM STATEMENT
+    ================================================================ -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">01 · Problem</p>
+        <h2 class="section-title center reveal">Problem <span class="gradient-text">Statement</span></h2>
+        <div class="prose-card reveal">
+          <h3>The Challenge</h3>
+          <p>A computer accessories business receives the same product questions over and over — specs, compatibility, price, availability. Every answer required a human to dig through the catalog and type a fresh response from scratch.</p>
+
+          <h3>Why It Matters</h3>
+          <p>Manual lookup is slow, inconsistent, and doesn't scale. Worse, when an AI answers, every repeated question still costs a full LLM generation — so latency and token spend keep growing as chat volume climbs.</p>
+
+          <h3>Goals</h3>
+          <ul>
+            <li>Answer product questions from the knowledge base in under 5–6 sentences.</li>
+            <li>Serve repeated questions instantly from a semantic cache.</li>
+            <li>Keep answers grounded in the catalog via a RAG retriever tool.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         ARCHITECTURE
+    ================================================================ -->
+    <section class="section section-alt">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">02 · Design</p>
+        <h2 class="section-title center reveal">System <span class="gradient-text">Architecture</span></h2>
+
+        <div class="arch-flow reveal">
+          <img src="diagrams/PartsPilot.png" alt="PartsPilot system architecture" class="arch-img" />
+        </div>
+
+        <div class="arch-grid">
+          <div class="prose-card reveal">
+            <h3>How It Works</h3>
+            <ol>
+              <li>A Google Sheet with the product catalog is pulled into n8n, formatted into clean text, split into chunks, embedded with Gemini, and written to a Supabase vector store.</li>
+              <li>When a customer messages the Telegram bot, the question is embedded and matched against a qa_cache vector table; if similarity is at least 0.9, the cached answer is returned instantly.</li>
+              <li>On a miss, an AI agent with a retriever tool (knowledge_base) generates the answer from the catalog, replies in Telegram, and writes the Q&amp;A pair back to qa_cache for next time.</li>
+            </ol>
+          </div>
+          <div class="prose-card reveal">
+            <h3>Tech Stack</h3>
+            <ul>
+              <li>AI / LLM — Google Gemini (chat + embeddings), OpenAI</li>
+              <li>RAG / Vectors — Supabase pgvector (knowledge_base + qa_cache)</li>
+              <li>Orchestration — n8n, LangChain agent + memory</li>
+              <li>Channel — Telegram Bot API</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIDEOS
+    ================================================================ -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">03 · Videos</p>
+        <h2 class="section-title center reveal">Project <span class="gradient-text">Videos</span></h2>
+
+        <div class="video-list">
+          <div class="video-card reveal">
+            <video controls preload="metadata" src="../PartsPilot/PartsPilot Agentic Rack Telegram Bot Demo.mp4"></video>
+            <div class="video-card-body">
+              <h3>PartsPilot Agentic Rack Telegram Bot Demo</h3>
+              <p>End-to-end walkthrough of the bot answering product questions inside Telegram.</p>
+            </div>
+          </div>
+          <div class="video-card reveal">
+            <video controls preload="metadata" src="../PartsPilot/Semantic Caching with SuperViz VectorStore.mp4"></video>
+            <div class="video-card-body">
+              <h3>Semantic Caching with Supabase VectorStore</h3>
+              <p>Explains how semantic caching short-circuits repeated questions and cuts LLM cost.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         SOP (STANDARD OPERATING PROCEDURE)
+    ================================================================ -->
+    <section class="section section-alt">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">04 · Process</p>
+        <h2 class="section-title center reveal">Standard Operating <span class="gradient-text">Procedure (SOP)</span></h2>
+        <p class="contact-lead reveal">
+          The repeatable process used to build and run PartsPilot.
+        </p>
+
+        <div class="sop-list">
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">01</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../PartsPilot/Screenshot 2026-08-14 014411.png" alt="Ingest workflow — Google Sheets to vector store" />
+                <figcaption>Step 1 · Ingest workflow</figcaption>
+              </figure>
+              <h3>Ingest the Product Catalog</h3>
+              <p>Pull every row from the product Google Sheet and rebuild each one into a clean text block (Name, Category, SKU, Price, Description). The Edit Fields node also attaches Category and SKU as metadata for later filtering.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">02</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../PartsPilot/Screenshot 2026-08-14 014451.png" alt="Chunk, embed and store in Supabase" />
+                <figcaption>Step 2 · Chunking &amp; embeddings</figcaption>
+              </figure>
+              <h3>Chunk, Embed &amp; Store</h3>
+              <p>Split each product description into 1,200-character chunks with the Recursive Character Text Splitter and embed them using Google Gemini. The Supabase Vector Store then writes every chunk into the knowledge_base table.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">03</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../PartsPilot/Screenshot 2026-08-14 014530.png" alt="Retrieve with semantic cache lookup" />
+                <figcaption>Step 3 · Semantic cache lookup</figcaption>
+              </figure>
+              <h3>Retrieve With a Semantic Cache</h3>
+              <p>The Telegram trigger starts the flow, embedding the customer's message and searching the qa_cache table for the top-1 match. If similarity is at least 0.9, the cached answer is returned instantly and the LLM is never invoked.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">04</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../PartsPilot/Screenshot 2026-08-14 014549.png" alt="Agent answers misses and writes back to cache" />
+                <figcaption>Step 4 · Miss handling &amp; write-back</figcaption>
+              </figure>
+              <h3>Answer Misses &amp; Write Back</h3>
+              <p>On a cache miss, the AI agent answers using a retriever tool pointed at knowledge_base and sends the reply over Telegram. The question and answer pair is then embedded and inserted into qa_cache so the next identical question is served instantly.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="prose-card reveal">
+          <h3>Notes &amp; Caveats</h3>
+          <p>The semantic-cache threshold (0.9) controls the accuracy/latency trade-off — lower it to catch more paraphrase matches, raise it to stay safer. The knowledge base must be re-ingested whenever the catalog changes.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Yashas Pareeshwad. Built with love and care.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

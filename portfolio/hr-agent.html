@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HR Agent — Yashas Pareeshwad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="index.html#hero" class="logo"><span class="logo-mark">&lt;/&gt;</span> Yashas Pareeshwad</a>
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html#about">About</a>
+        <a href="index.html#skills">Skills</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#experience">Experience</a>
+        <a href="index.html#contact" class="nav-cta">Hire Me</a>
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="project-page">
+
+    <!-- ================================================================
+         PROJECT TITLE (Hero)
+    ================================================================ -->
+    <section class="project-hero">
+      <div class="project-hero-bg" aria-hidden="true"></div>
+      <div class="section-inner project-hero-inner">
+        <p class="project-tag reveal">AI AUTOMATION · N8N · RAG · PII REDACTION · GMAIL</p>
+        <h1 class="project-title reveal">HR Agent <span class="gradient-text">Agentic Recruiting Assistant</span></h1>
+        <p class="project-sub reveal">An agentic HR assistant that ingests candidate resumes, scores them against the job description, answers recruiter questions over a vector store, drafts shortlisting emails, and schedules interviews — all from one chat interface.</p>
+        <div class="project-hero-meta reveal">
+          <a href="https://github.com/Yashas422005/Portfolio-Projects/tree/2ab4c71aba073d7b2ae66ab8cffb999f4ef97620/HR-Agent" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         PROBLEM STATEMENT
+    ================================================================ -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">01 · Problem</p>
+        <h2 class="section-title center reveal">Problem <span class="gradient-text">Statement</span></h2>
+        <div class="prose-card reveal">
+          <h3>The Challenge</h3>
+          <p>Recruiters manually screen every resume, hunt for candidate details, and juggle shortlisting emails and interview scheduling across tools. Resumes full of personal data also flow into LLMs unredacted, which is a privacy risk.</p>
+
+          <h3>Why It Matters</h3>
+          <p>Manual screening is slow and inconsistent, and scoring each resume against a job description by hand is error-prone. Sending raw resumes with emails, phone numbers, and addresses into an LLM exposes candidate PII unnecessarily.</p>
+
+          <h3>Goals</h3>
+          <ul>
+            <li>Auto-ingest resumes and score them against the JD (ATS score out of 10).</li>
+            <li>Redact PII before any LLM processing.</li>
+            <li>Answer recruiter queries over a RAG index of candidates.</li>
+            <li>Draft shortlisting emails and schedule interviews, always after user confirmation.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         ARCHITECTURE
+    ================================================================ -->
+    <section class="section section-alt">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">02 · Design</p>
+        <h2 class="section-title center reveal">System <span class="gradient-text">Architecture</span></h2>
+
+        <div class="arch-flow reveal">
+          <img src="diagrams/HR agent.png" alt="HR Agent system architecture" class="arch-img" />
+        </div>
+
+        <div class="arch-grid">
+          <div class="prose-card reveal">
+            <h3>How It Works</h3>
+            <ol>
+              <li>Candidates submit a form (name, email, phone, resume PDF/DOCX); the workflow routes the file by type and extracts its text.</li>
+              <li>Regex code pulls structured contact info (email, phone, LinkedIn, GitHub, name, address) and a sanitizer redacts that PII before any LLM call.</li>
+              <li>The LLM scores the sanitized resume against the job description (ATS out of 10) and produces a summary and skills; the record is written to Postgres and indexed into a Supabase vector store (candidate_2).</li>
+              <li>An HR chat agent uses a RAG sub-agent to pull candidate info and candidate_id, drafts shortlisting emails via a Mail sub-agent, and books meetings via a Calendar sub-agent — always confirming with the user first.</li>
+            </ol>
+          </div>
+          <div class="prose-card reveal">
+            <h3>Tech Stack</h3>
+            <ul>
+              <li>AI / LLM — Google Gemini (chat + embeddings)</li>
+              <li>RAG / Vectors — Supabase pgvector (candidate_2)</li>
+              <li>Data — Postgres (candidates, batches)</li>
+              <li>Orchestration — n8n · Memory &amp; Cache — Redis</li>
+              <li>Email / Calendar — Gmail draft, Google Calendar</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIDEOS
+    ================================================================ -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">03 · Videos</p>
+        <h2 class="section-title center reveal">Project <span class="gradient-text">Videos</span></h2>
+        <div class="video-list">
+          <div class="video-card reveal">
+            <video controls preload="metadata" src="../HR Project using n8n/ETS Qualified Candidate Meeting Invitation.mp4"></video>
+            <div class="video-card-body">
+              <h3>ETS Qualified Candidate Meeting Invitation</h3>
+              <p>Shows the agent drafting a shortlisting email with the meeting invitation to a qualified candidate.</p>
+            </div>
+          </div>
+          <div class="video-card reveal">
+            <video controls preload="metadata" src="../HR Project using n8n/HR Data Ingestion Pipeline for Candidate Privacy.mp4"></video>
+            <div class="video-card-body">
+              <h3>HR Data Ingestion Pipeline for Candidate Privacy</h3>
+              <p>Walks through the resume ingestion pipeline with PII extraction and sanitization before any LLM processing.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         SOP (STANDARD OPERATING PROCEDURE)
+    ================================================================ -->
+    <section class="section section-alt">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">04 · Process</p>
+        <h2 class="section-title center reveal">Standard Operating <span class="gradient-text">Procedure (SOP)</span></h2>
+        <p class="contact-lead reveal">
+          The repeatable process used to build and run the HR Agent.
+        </p>
+
+        <div class="sop-list">
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">01</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../HR Project using n8n/Screenshot 2026-08-15 150411.png" alt="Candidate form and resume extraction" />
+                <figcaption>Step 1 · Candidate submission</figcaption>
+              </figure>
+              <h3>Collect Candidate Details</h3>
+              <p>Recruiters capture First Name, Last Name, Email, Phone, and the resume via a web form, and a switch node routes the file by type (PDF or DOCX) to extract its text. This is the single entry point where a candidate enters the pipeline.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">02</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../HR Project using n8n/Screenshot 2026-08-15 150629.png" alt="PII extraction and sanitization" />
+                <figcaption>Step 2 · PII extraction &amp; redaction</figcaption>
+              </figure>
+              <h3>Extract &amp; Sanitize PII</h3>
+              <p>Regex code pulls structured contact data (email, phone, LinkedIn, GitHub, portfolio, name, address) out of the resume text. A sanitizer then redacts that personal information into placeholders so no PII ever reaches the LLM.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">03</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../HR Project using n8n/Screenshot 2026-08-15 150733.png" alt="ATS scoring against the job description" />
+                <figcaption>Step 3 · ATS scoring</figcaption>
+              </figure>
+              <h3>Score the Resume Against the JD</h3>
+              <p>The job description is downloaded from Google Drive and extracted, then a Gemini agent generates an ATS score out of 10, a summary, and a skill list through a structured output parser. This turns every resume into a comparable screening record.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">04</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../HR Project using n8n/Screenshot 2026-08-15 150800.png" alt="Store and index the candidate" />
+                <figcaption>Step 4 · Storage &amp; indexing</figcaption>
+              </figure>
+              <h3>Store &amp; Index the Candidate</h3>
+              <p>The candidate row is inserted into Postgres and its candidate_id is returned, then the summary, ATS, and skills are embedded with Gemini and written to the candidate_2 vector store with batch metadata. Re-submissions update the existing vector instead of duplicating it.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">05</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../HR Project using n8n/Screenshot 2026-08-15 150836.png" alt="HR chat agent retrieving, mailing and scheduling" />
+                <figcaption>Step 5 · Assistant actions</figcaption>
+              </figure>
+              <h3>Answer, Mail &amp; Schedule</h3>
+              <p>The HR chat agent (with Redis memory) retrieves matching candidates through the RAG sub-agent and always asks before acting. It drafts shortlisting emails with the Zoom meeting link via candidate_id, and books interviews on Google Calendar only after the user confirms.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="prose-card reveal">
+          <h3>Notes &amp; Caveats</h3>
+          <p>The vector-store lookup is scoped to the active batch so HR only sees the current hiring round. Always confirm before drafting mail or scheduling — that's enforced in the orchestrator's system prompt. The resume sanitizer is the privacy gate: keep it upstream of every LLM call.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Yashas Pareeshwad. Built with love and care.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

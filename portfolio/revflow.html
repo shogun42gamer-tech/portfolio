@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RevFlow — Yashas Pareeshwad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="index.html#hero" class="logo"><span class="logo-mark">&lt;/&gt;</span> Yashas Pareeshwad</a>
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html#about">About</a>
+        <a href="index.html#skills">Skills</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#experience">Experience</a>
+        <a href="index.html#contact" class="nav-cta">Hire Me</a>
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="project-page">
+
+    <!-- ================================================================
+         PROJECT TITLE (Hero)
+    ================================================================ -->
+    <section class="project-hero">
+      <div class="project-hero-bg" aria-hidden="true"></div>
+      <div class="section-inner project-hero-inner">
+        <p class="project-tag reveal">AI AUTOMATION · N8N · MULTI-AGENT · PIPEDRIVE · MCP</p>
+        <h1 class="project-title reveal">RevFlow <span class="gradient-text">Multi-Agent Sales Automation</span></h1>
+        <p class="project-sub reveal">A multi-agent sales co-pilot that researches prospects with Hunter.io, creates leads in Pipedrive, drafts personalized outreach emails, books demo calls on Google Calendar, and creates deals — all from one chat conversation.</p>
+        <div class="project-hero-meta reveal">
+          <a href="https://github.com/Yashas422005/Portfolio-Projects/tree/2ab4c71aba073d7b2ae66ab8cffb999f4ef97620/RevFlow" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         PROBLEM STATEMENT
+    ================================================================ -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">01 · Problem</p>
+        <h2 class="section-title center reveal">Problem <span class="gradient-text">Statement</span></h2>
+        <div class="prose-card reveal">
+          <h3>The Challenge</h3>
+          <p>The business-development pipeline is a chain of disconnected manual chores: hunting prospects, keying them into the CRM, writing outreach emails, scheduling demos, and creating deals. Each hand-off slows the team down and risks losing leads.</p>
+
+          <h3>Why It Matters</h3>
+          <p>Prospects who aren't entered fast get forgotten, follow-up emails arrive late, and double-booked calendars burn trust. Automating the full flow in one chat lets a single salesperson run the entire motion in minutes.</p>
+
+          <h3>Goals</h3>
+          <ul>
+            <li>Generate qualified prospect data from a single instruction.</li>
+            <li>Auto-create organizations, persons, and leads in Pipedrive.</li>
+            <li>Draft personalized outreach to every lead and book demos only when asked.</li>
+            <li>Create deals only after explicit user confirmation.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         ARCHITECTURE
+    ================================================================ -->
+    <section class="section section-alt">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">02 · Design</p>
+        <h2 class="section-title center reveal">System <span class="gradient-text">Architecture</span></h2>
+
+        <div class="arch-flow reveal">
+          <img src="diagrams/RevFlow.png" alt="RevFlow system architecture" class="arch-img" />
+        </div>
+
+        <div class="arch-grid">
+          <div class="prose-card reveal">
+            <h3>How It Works</h3>
+            <ol>
+              <li>A chat trigger feeds the user's request to an orchestrator agent (Gemini) backed by Redis memory; the agent decides which sub-agent tool to call.</li>
+              <li>Info-gen sub-agent researches and returns structured client data for up to 3 prospects using the Hunter.io MCP tool.</li>
+              <li>RevOps sub-agent creates the organization, person, and lead in Pipedrive; SDR sub-agent drafts a Gmail message to each lead from the CRM.</li>
+              <li>On request, the deal_creation sub-agent finds the person and creates a deal (after confirmation), while the Demo booking sub-agent checks availability and schedules the event with a Zoom link.</li>
+            </ol>
+          </div>
+          <div class="prose-card reveal">
+            <h3>Tech Stack</h3>
+            <ul>
+              <li>AI / LLM — Google Gemini (orchestrator + sub-agents), OpenAI</li>
+              <li>CRM — Pipedrive</li>
+              <li>Prospect Data — Hunter.io MCP</li>
+              <li>Email / Calendar — Gmail, Google Calendar · Memory — Redis · Notifications — Pushover</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIDEOS
+    ================================================================ -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">03 · Videos</p>
+        <h2 class="section-title center reveal">Project <span class="gradient-text">Videos</span></h2>
+
+        <div class="video-list">
+          <div class="video-card reveal">
+            <video controls preload="metadata" src="../RevFlow/RevFlow Multi Agent Sales Automation Demo.mp4"></video>
+            <div class="video-card-body">
+              <h3>RevFlow Multi Agent Sales Automation Demo</h3>
+              <p>End-to-end demo of the sales flow: research prospects, create leads, draft emails, and book demos from one chat.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         SOP (STANDARD OPERATING PROCEDURE)
+    ================================================================ -->
+    <section class="section section-alt">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">04 · Process</p>
+        <h2 class="section-title center reveal">Standard Operating <span class="gradient-text">Procedure (SOP)</span></h2>
+        <p class="contact-lead reveal">
+          The repeatable process used to build and run RevFlow.
+        </p>
+
+        <div class="sop-list">
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">01</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../RevFlow/Screenshot 2026-08-13 235206.png" alt="Build the orchestrator agent" />
+                <figcaption>Step 1 · Orchestrator setup</figcaption>
+              </figure>
+              <h3>Build the Orchestrator</h3>
+              <p>Configure the chat trigger and the Gemini agent, attach Redis memory for conversation context, and register the five sub-agents as tools. This lets the orchestrator route each user request to the right sub-agent.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">02</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../RevFlow/Screenshot 2026-08-13 235244.png" alt="Generate prospect info via Hunter.io MCP" />
+                <figcaption>Step 2 · Prospect generation</figcaption>
+              </figure>
+              <h3>Generate Prospect Info</h3>
+              <p>The Info-gen sub-agent takes the user's target (for example "US clients for AI automation"), searches with the Hunter.io MCP tool, and returns structured records for up to 3 clients. The structured output parser keeps the data consistent for the next sub-agent.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">03</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../RevFlow/Screenshot 2026-08-13 235304.png" alt="Create CRM records in Pipedrive" />
+                <figcaption>Step 3 · CRM record creation</figcaption>
+              </figure>
+              <h3>Create CRM Records</h3>
+              <p>The RevOps sub-agent parses the structured data and creates the organization, person, and lead records in Pipedrive. Every prospect now lives in the CRM with all contact details linked to its lead.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">04</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../RevFlow/Screenshot 2026-08-13 235328.png" alt="Draft outreach emails to leads" />
+                <figcaption>Step 4 · Outreach drafting</figcaption>
+              </figure>
+              <h3>Draft Outreach Emails</h3>
+              <p>The SDR sub-agent fetches all persons from Pipedrive and drafts a personalized HTML Gmail message for each lead. The emails introduce the agency, highlight the AI services, and close with the contact details.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">05</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../RevFlow/Screenshot 2026-08-13 235346.png" alt="Create a deal on approval" />
+                <figcaption>Step 5 · Deal creation</figcaption>
+              </figure>
+              <h3>Create a Deal on Approval</h3>
+              <p>The deal_creation sub-agent looks up the requested person in Pipedrive and — only after the user confirms — creates the deal. A success or failure notification is pushed to confirm the outcome.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">06</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../RevFlow/Screenshot 2026-08-13 235406.png" alt="Book the demo on the calendar" />
+                <figcaption>Step 6 · Demo booking</figcaption>
+              </figure>
+              <h3>Book the Demo</h3>
+              <p>The Demo booking sub-agent checks Google Calendar availability for the requested slot, then creates the event with a product description and a Zoom link. The user is always asked for the date and time before anything is booked.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="prose-card reveal">
+          <h3>Notes &amp; Caveats</h3>
+          <p>The orchestrator is instructed to always ask before creating a deal and to confirm date/time before booking demos — keep that in the system prompt. Redis memory lets the agent follow the conversation across multiple turns.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Yashas Pareeshwad. Built with love and care.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

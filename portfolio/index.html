@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- ============================================================
+       EDIT ME: Change the title below to your name / brand.
+  ============================================================ -->
+  <title>Yashas Pareeshwad — Portfolio</title>
+  <meta name="description" content="Freelance portfolio of Your Name — [Your tagline here]." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ================================================================
+       NAVBAR
+       EDIT ME: change the menu links / logo text here.
+  ================================================================ -->
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="#hero" class="logo"><span class="logo-mark">&lt;/&gt;</span> Yashas Pareeshwad</a>
+      <nav class="nav-links" id="nav-links">
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact" class="nav-cta">Hire Me</a>
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ================================================================
+         HERO
+         EDIT ME: fill in your name, tagline, subtext, and buttons.
+    ================================================================ -->
+    <section id="hero" class="hero">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <p class="hero-eyebrow reveal">Hello, I'm</p>
+        <h1 class="hero-title reveal">
+          <!-- EDIT ME: your name -->
+          Yashas Pareeshwad
+          <!-- EDIT ME: your role, e.g. "Full-Stack Developer" -->
+          <span class="gradient-text">AI Automation Engineer</span>
+        </h1>
+        <p class="hero-sub reveal">
+          <!-- EDIT ME: one-line pitch about what you do -->
+          I build AI agents, workflow automations, and backend systems using n8n, LangGraph, RAG, and modern AI APIs to automate real business processes.
+        </p>
+        <div class="hero-actions reveal">
+          <!-- EDIT ME: point these to your project section and your resume file -->
+          <a href="#projects" class="btn btn-primary">View My Work</a>
+          <a href="yashas_pareeshwad.pdf" class="btn btn-ghost" download>Download Resume</a>
+        </div>
+        <ul class="hero-meta reveal">
+          <li><strong>Open for work</strong> · Available worldwide</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         ABOUT
+         EDIT ME: your bio, image, and details.
+    ================================================================ -->
+    <section id="about" class="section">
+      <div class="section-inner about-grid">
+        <!-- EDIT ME: replace with a real photo of you -->
+        <div class="about-portrait reveal">
+          <div class="portrait-placeholder">Your<br />Photo</div>
+        </div>
+        <div class="about-text">
+          <p class="eyebrow reveal">About Me</p>
+          <h2 class="section-title reveal">Turning business processes into <span class="gradient-text">AI-powered automation</span></h2>
+          <p class="reveal">
+            <!-- EDIT ME: your bio — background, what you love, your mission -->
+            I'm Yashas, an AI Automation & Backend Engineer focused on building AI agents, intelligent workflows, and backend systems that automate real business processes. I work with tools like n8n, LangGraph, LangChain, RAG, MCPs, and modern AI APIs to turn manual workflows into reliable automated systems.
+          </p>
+          <p class="reveal">
+            I've built projects involving AI-powered recruitment, candidate ranking, document processing, RAG systems, CRM automation, data pipelines, and production deployments using Docker and VPS infrastructure. I enjoy solving backend-heavy problems and connecting different services into systems that actually work end-to-end.
+          </p>
+          <ul class="about-facts reveal">
+            <!-- EDIT ME: quick facts / highlights -->
+            <li><span class="fact-label">Location:</span> India</li>
+            <li><span class="fact-label">Experience:</span> 6+ months</li>
+            <li><span class="fact-label">Focus:</span> AI Automation · AI Agents · Backend Systems</li>
+          </ul>
+          <div class="about-actions reveal">
+            <a href="#contact" class="btn btn-primary">Let's Talk</a>
+            <!-- EDIT ME: add links to your socials -->
+            <a href="https://github.com/Yashas422005" class="btn btn-ghost">GitHub</a>
+            <a href="https://www.linkedin.com/in/yashas-pareeshwad-b81547330" class="btn btn-ghost">LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         SKILLS
+         EDIT ME: add/remove skills and set your proficiency levels.
+    ================================================================ -->
+    <section id="skills" class="section section-alt">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">My Skills</p>
+        <h2 class="section-title center reveal">What I <span class="gradient-text">bring to the table</span></h2>
+
+        <div class="skills-grid">
+          <div class="skill-card reveal">
+            <h3>AI Automation</h3>
+            <ul>
+              <!-- EDIT ME: your frontend skills -->
+              <li>n8n Workflows</li>
+              <li>AI Agents</li>
+              <li>LangChain/LangGraph</li>
+              <li>MCP Integrations</li>
+            </ul>
+          </div>
+          <div class="skill-card reveal">
+            <h3>AI & RAG</h3>
+            <ul>
+              <!-- EDIT ME: your backend skills -->
+              <li>RAG Systems</li>
+              <li>Vector Databases</li>
+              <li>LLM APIs</li>
+              <li>Context Engineering</li>
+            </ul>
+          </div>
+          <div class="skill-card reveal">
+            <h3>Deployment &amp; Tools</h3>
+            <ul>
+              <!-- EDIT ME: your tools -->
+              <li>Docker</li>
+              <li>Git &amp; GitHub</li>
+              <li>VPS</li>
+              <li>API Integrations</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="progress-list">
+          <!-- EDIT ME: update the label and the data-level percentage (0–100) -->
+          <div class="progress-item reveal">
+            <div class="progress-head"><span>AI Automation & Agents</span><span class="progress-num">80%</span></div>
+            <div class="progress-track"><div class="progress-fill" data-level="90"></div></div>
+          </div>
+          <div class="progress-item reveal">
+            <div class="progress-head"><span>RAG & LLM Systems</span><span class="progress-num">75%</span></div>
+            <div class="progress-track"><div class="progress-fill" data-level="80"></div></div>
+          </div>
+          <div class="progress-item reveal">
+            <div class="progress-head"><span>Python & Backend</span><span class="progress-num">70%</span></div>
+            <div class="progress-track"><div class="progress-fill" data-level="75"></div></div>
+          </div>
+          <div class="progress-item reveal">
+            <div class="progress-head"><span>Deployment & Integrations</span><span class="progress-num">65%</span></div>
+            <div class="progress-track"><div class="progress-fill" data-level="65"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         PROJECTS
+         EDIT ME: replace each card with your real work.
+    ================================================================ -->
+    <section id="projects" class="section">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">Portfolio</p>
+        <h2 class="section-title center reveal">Selected <span class="gradient-text">projects</span></h2>
+        <div class="projects-grid">
+
+          <article class="project-card reveal">
+            <div class="project-thumb placeholder">HR Agent</div>
+            <div class="project-body">
+              <p class="project-tag">AI Automation · n8n · RAG · Gmail</p>
+              <h3>HR Agent — Agentic Recruiting Assistant</h3>
+              <p class="project-desc">Agentic HR assistant that ingests resumes, scores candidates against the job description (ATS), answers queries over a RAG index, drafts shortlisting emails, and schedules interviews — from one chat.</p>
+              <div class="project-links">
+                <a href="https://github.com/Yashas422005/Portfolio-Projects/tree/2ab4c71aba073d7b2ae66ab8cffb999f4ef97620/HR-Agent" target="_blank" rel="noopener">GitHub ↗</a>
+                <a href="hr-agent.html">Demo ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card reveal">
+            <div class="project-thumb placeholder">RevFlow</div>
+            <div class="project-body">
+              <p class="project-tag">AI Automation · n8n · Multi-Agent</p>
+              <h3>RevFlow — Multi-Agent Sales Automation</h3>
+              <p class="project-desc">Multi-agent sales co-pilot that researches prospects with Hunter.io, creates leads in Pipedrive, drafts outreach emails, books demos, and creates deals — all from one chat.</p>
+              <div class="project-links">
+                <a href="https://github.com/Yashas422005/Portfolio-Projects/tree/2ab4c71aba073d7b2ae66ab8cffb999f4ef97620/RevFlow" target="_blank" rel="noopener">GitHub ↗</a>
+                <a href="revflow.html">Demo ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card reveal">
+            <div class="project-thumb placeholder">PartsPilot</div>
+            <div class="project-body">
+              <p class="project-tag">AI Automation · n8n · RAG · Telegram</p>
+              <h3>PartsPilot — Agentic Support Bot</h3>
+              <p class="project-desc">Agentic Telegram customer-support bot that answers product questions from a RAG knowledge base and uses semantic caching to answer repeat questions instantly.</p>
+              <div class="project-links">
+                <a href="https://github.com/Yashas422005/Portfolio-Projects/tree/2ab4c71aba073d7b2ae66ab8cffb999f4ef97620/PartsPilot" target="_blank" rel="noopener">GitHub ↗</a>
+                <a href="parts-pilot.html">Demo ↗</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card reveal">
+            <div class="project-thumb placeholder">Portfolio Agent</div>
+            <div class="project-body">
+              <p class="project-tag">AI Automation · n8n · Finance</p>
+              <h3>Portfolio Agent — Auto Rebalancing</h3>
+              <p class="project-desc">AI agent that reads a holdings sheet, pulls end-of-day prices, recomputes your equity/income split to a target ratio, updates the sheet, and sends a summary notification and email draft.</p>
+              <div class="project-links">
+                <a href="https://github.com/Yashas422005/Portfolio-Projects/tree/2ab4c71aba073d7b2ae66ab8cffb999f4ef97620/Portfolio%20Rebalancer" target="_blank" rel="noopener">GitHub ↗</a>
+                <a href="portfolio-agent.html">Demo ↗</a>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         EXPERIENCE / TESTIMONIALS
+         EDIT ME: replace with your real job history or client quotes.
+    ================================================================ -->
+    <section id="experience" class="section section-alt">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">Experience &amp; Clients</p>
+        <h2 class="section-title center reveal">Trusted by <span class="gradient-text">great people</span></h2>
+
+        <div class="timeline">
+          <!-- EDIT ME: duplicate this block for each job / project -->
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <p class="timeline-period">Present</p>
+              <h3>AI Automation Freelancer</h3>
+              <p>Helping businesses identify opportunities for AI automation and developing solutions such as AI agents, lead-generation workflows, CRM automation, RAG systems, and intelligent business processes.</p>
+            </div>
+          </div>
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <p class="timeline-period">Mar 2026 — Apr 2026</p>
+              <h3>Website Deployment · MODERN FURNITURES[Local Business]</h3>
+              <p>Helped a local business deploy an AI-generated business website to a VPS and configured the production environment for public access.</p>
+            </div>
+          </div>
+          <div class="timeline-item reveal">
+            <div class="timeline-dot"></div>
+            <div class="timeline-card">
+              <p class="timeline-period">Aug 2025 - Jan 2026</p>
+              <h3>AI/ML Intern · VIJESHA IT SERVICES</h3>
+              <p>Compared VADER and DistilBERT sentiment analysis models and evaluated their accuracy to demonstrate the improvement achieved by transformer-based NLP.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonials">
+          <div class="testimonial reveal">
+            <p class="quote">"Your Name delivered exactly what we needed, on time and with great communication. Highly recommended."</p>
+            <p class="author">— Client Name, <span>Company / Role</span></p>
+          </div>
+          <div class="testimonial reveal">
+            <p class="quote">"A real pleasure to work with. Professional, skilled, and genuinely invested in the outcome."</p>
+            <p class="author">— Client Name, <span>Company / Role</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         CONTACT
+         EDIT ME: your email, and social links.
+    ================================================================ -->
+    <section id="contact" class="section">
+      <div class="section-inner contact-inner">
+        <p class="eyebrow center reveal">Contact</p>
+        <h2 class="section-title center reveal">Let's build something <span class="gradient-text">together</span></h2>
+        <p class="contact-lead reveal">
+          <!-- EDIT ME: invite people to reach out -->
+          Have a project in mind? I'd love to hear about it. Send me a message and I'll get back to you within 24 hours.
+        </p>
+
+        <form class="contact-form reveal" id="contact-form">
+          <!-- EDIT ME: replace the placeholder emails below with your real email -->
+          <div class="form-row">
+            <input type="text" name="name" placeholder="Your Name" required />
+            <input type="email" name="email" placeholder="Your Email" required />
+          </div>
+          <input type="text" name="subject" placeholder="Subject" required />
+          <textarea name="message" placeholder="Tell me about your project…" rows="5" required></textarea>
+          <button type="submit" class="btn btn-primary">Send Message</button>
+          <p class="form-note" id="form-note">
+            <!-- EDIT ME: your email address -->
+            Or email me directly at <a href="mailto:yashas422005@gmail.com">yashas422005@gmail.com</a>
+          </p>
+        </form>
+
+        <div class="socials reveal">
+          <!-- EDIT ME: replace with your real social profiles -->
+          <a href="https://github.com/Yashas422005" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://www.linkedin.com/in/yashas-pareeshwad-b81547330" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://x.com/Yashas422005" target="_blank" rel="noopener">Twitter / X</a>
+          <a href="mailto:yashas422005@gmail.com">Email</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================================================================
+       FOOTER
+       EDIT ME: your copyright line.
+  ================================================================ -->
+  <footer class="footer">
+    <p>© <span id="year"></span> Yashas Pareeshwad. Built with love and care.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

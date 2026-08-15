@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Agent — Yashas Pareeshwad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="index.html#hero" class="logo"><span class="logo-mark">&lt;/&gt;</span> Yashas Pareeshwad</a>
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html#about">About</a>
+        <a href="index.html#skills">Skills</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#experience">Experience</a>
+        <a href="index.html#contact" class="nav-cta">Hire Me</a>
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="project-page">
+
+    <!-- ================================================================
+         PROJECT TITLE (Hero)
+    ================================================================ -->
+    <section class="project-hero">
+      <div class="project-hero-bg" aria-hidden="true"></div>
+      <div class="section-inner project-hero-inner">
+        <p class="project-tag reveal">AI AUTOMATION · N8N · FINANCE · GOOGLE SHEETS · MARKETSTACK</p>
+        <h1 class="project-title reveal">Portfolio Agent <span class="gradient-text">Automated Rebalancing</span></h1>
+        <p class="project-sub reveal">An agentic rebalancer that reads a holdings spreadsheet, pulls end-of-day prices, recomputes your equity/income split to hit a target ratio, updates the sheet, and finishes with a push notification and a summary email draft.</p>
+        <div class="project-hero-meta reveal">
+          <a href="https://github.com/Yashas422005/Portfolio-Projects/tree/2ab4c71aba073d7b2ae66ab8cffb999f4ef97620/Portfolio%20Rebalancer" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         PROBLEM STATEMENT
+    ================================================================ -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">01 · Problem</p>
+        <h2 class="section-title center reveal">Problem <span class="gradient-text">Statement</span></h2>
+        <div class="prose-card reveal">
+          <h3>The Challenge</h3>
+          <p>Keeping an investment portfolio at a target equity/income ratio means repeatedly checking market prices, recalculating quantities, and editing a spreadsheet by hand. This becomes a tedious, error-prone ritual every time the market moves.</p>
+
+          <h3>Why It Matters</h3>
+          <p>Manual rebalancing is slow and easy to get wrong — portfolios drift from their intended risk profile and rebalancing windows get missed entirely. An agent that does the whole job in minutes keeps the portfolio on target with full auditability.</p>
+
+          <h3>Goals</h3>
+          <ul>
+            <li>Pull the latest end-of-day prices for all held tickers automatically.</li>
+            <li>Update the price and new-quantity columns in the sheet.</li>
+            <li>Verify the target ratio is met and confirm with a notification + email draft.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         ARCHITECTURE
+    ================================================================ -->
+    <section class="section section-alt">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">02 · Design</p>
+        <h2 class="section-title center reveal">System <span class="gradient-text">Architecture</span></h2>
+
+        <div class="arch-flow reveal">
+          <img src="diagrams/Portfolio Rebalancer.png" alt="Portfolio Agent system architecture" class="arch-img" />
+        </div>
+
+        <div class="arch-grid">
+          <div class="prose-card reveal">
+            <h3>How It Works</h3>
+            <ol>
+              <li>A web form captures the target equity/income ratio and starts the agent.</li>
+              <li>The agent reads the portfolio sheet and updates the Price column with fresh end-of-day quotes from Marketstack.</li>
+              <li>It computes new quantities to hit the ratio, writes them to the rebalancing table, re-checks the balance, then drafts a Gmail summary and sends a Pushover notification.</li>
+            </ol>
+          </div>
+          <div class="prose-card reveal">
+            <h3>Tech Stack</h3>
+            <ul>
+              <li>AI / LLM — Google Gemini</li>
+              <li>Data — Google Sheets (read + update tools)</li>
+              <li>Market Data — Marketstack EoD API</li>
+              <li>Notifications / Email — Pushover, Gmail draft</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIDEOS
+    ================================================================ -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">03 · Videos</p>
+        <h2 class="section-title center reveal">Project <span class="gradient-text">Videos</span></h2>
+
+        <div class="video-list">
+          <div class="video-card reveal">
+            <video controls preload="metadata" src="../Portfolio_agent/AI Agent Automatically Rebalances My Portfolio.mp4"></video>
+            <div class="video-card-body">
+              <h3>AI Agent Automatically Rebalances My Portfolio</h3>
+              <p>Live walkthrough of the agent fetching prices, rebalancing the sheet, and sending its summary.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         SOP (STANDARD OPERATING PROCEDURE)
+    ================================================================ -->
+    <section class="section section-alt">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">04 · Process</p>
+        <h2 class="section-title center reveal">Standard Operating <span class="gradient-text">Procedure (SOP)</span></h2>
+        <p class="contact-lead reveal">
+          The repeatable process used to build and run the Portfolio Agent.
+        </p>
+
+        <div class="sop-list">
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">01</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../Portfolio_agent/Screenshot 2026-08-11 140217.png" alt="Configure the agent and its tools" />
+                <figcaption>Step 1 · Agent configuration</figcaption>
+              </figure>
+              <h3>Configure the Agent &amp; Tools</h3>
+              <p>Wire the agent to Google Sheets (read plus two update operations), Marketstack, Gmail, and Pushover, then encode the 7-step execution plan in the system prompt. This step defines everything the agent is allowed to do.</p>
+            </div>
+          </div>
+
+          <div class="sop-item has-shot reveal">
+            <span class="sop-num">02</span>
+            <div class="sop-body">
+              <figure class="sop-shot">
+                <img src="../Portfolio_agent/Screenshot 2026-08-11 140320.png" alt="Run and verify the rebalance" />
+                <figcaption>Step 2 · Run &amp; verify</figcaption>
+              </figure>
+              <h3>Run &amp; Verify the Rebalance</h3>
+              <p>Submit the target equity/income ratio on the web form and watch the agent read prices, update the sheet, and re-check the balance. Confirm the success notification and the drafted summary email that reports the changes and improvements.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="prose-card reveal">
+          <h3>Notes &amp; Caveats</h3>
+          <p>The agent drafts the email rather than sending it, so a human reviews the summary before it goes out. Re-run the workflow whenever you want a fresh rebalance — each run overwrites the Price and New Quantity columns.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Yashas Pareeshwad. Built with love and care.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

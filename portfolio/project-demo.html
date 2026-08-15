@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Demo — Yashas Pareeshwad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="index.html#hero" class="logo"><span class="logo-mark">&lt;/&gt;</span> Yashas Pareeshwad</a>
+      <nav class="nav-links" id="nav-links">
+        <a href="index.html#about">About</a>
+        <a href="index.html#skills">Skills</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#experience">Experience</a>
+        <a href="index.html#contact" class="nav-cta">Hire Me</a>
+      </nav>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="project-page">
+
+    <!-- ================================================================
+         PROJECT TITLE (Hero)
+         EDIT ME: fill in the title, tagline, and tags for this project.
+    ================================================================ -->
+    <section class="project-hero">
+      <div class="project-hero-bg" aria-hidden="true"></div>
+      <div class="section-inner project-hero-inner">
+        <!-- EDIT ME: category / tech tags -->
+        <p class="project-tag reveal">AI AUTOMATION · N8N · LANGCHAIN</p>
+        <!-- EDIT ME: project title -->
+        <h1 class="project-title reveal">HR <span class="gradient-text">Agent</span></h1>
+        <!-- EDIT ME: one-line summary -->
+        <p class="project-sub reveal">An agentic HR assistant that reads resumes, scores candidates against a job description, answers recruiter questions over a vector store, and drafts shortlisting emails and interview invites — all from one chat interface.</p>
+        <div class="project-hero-meta reveal">
+          <!-- EDIT ME: live demo + source links (leave href="#!" if not ready) -->
+          <a href="#!" class="btn btn-ghost" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         PROBLEM STATEMENT
+         EDIT ME: replace the placeholder text below.
+    ================================================================ -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">01 · Problem</p>
+        <h2 class="section-title center reveal">Problem <span class="gradient-text">Statement</span></h2>
+        <div class="prose-card reveal">
+          <h3>The Challenge</h3>
+          <!-- EDIT ME: describe the problem you set out to solve -->
+          <p>Describe the real-world problem or pain point this project addresses. Who was affected, and what was the cost of the old way of doing things?</p>
+
+          <h3>Why It Matters</h3>
+          <!-- EDIT ME: why this problem is worth solving -->
+          <p>Explain the impact — time lost, money wasted, errors made, or opportunities missed when this problem goes unsolved.</p>
+
+          <h3>Goals</h3>
+          <!-- EDIT ME: list the concrete goals / success criteria -->
+          <ul>
+            <li>Goal 1 — what should the final product achieve?</li>
+            <li>Goal 2 — measurable outcome (e.g. "reduce processing time by 80%")</li>
+            <li>Goal 3 — constraints (budget, accuracy, latency, etc.)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         ARCHITECTURE
+         EDIT ME: describe the system design and swap in a real diagram.
+    ================================================================ -->
+    <section class="section section-alt">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">02 · Design</p>
+        <h2 class="section-title center reveal">System <span class="gradient-text">Architecture</span></h2>
+
+        <!-- EDIT ME: replace this box with an actual architecture image/diagram -->
+        <div class="arch-diagram reveal">Architecture Diagram Placeholder</div>
+
+        <div class="arch-grid">
+          <div class="prose-card reveal">
+            <h3>How It Works</h3>
+            <!-- EDIT ME: describe the data flow / pipeline end to end -->
+            <ol>
+              <li>Step 1 — where the input comes from and how it enters the system.</li>
+              <li>Step 2 — what processing happens (LLM calls, retrieval, transforms).</li>
+              <li>Step 3 — how the result is produced and delivered.</li>
+            </ol>
+          </div>
+          <div class="prose-card reveal">
+            <h3>Tech Stack</h3>
+            <!-- EDIT ME: list the key tools, libraries, and services used -->
+            <ul>
+              <li>Language / Framework — e.g. Python, FastAPI</li>
+              <li>AI / LLM — e.g. OpenAI, LangChain, LangGraph, RAG</li>
+              <li>Data Storage — e.g. PostgreSQL, Pinecone, Chroma</li>
+              <li>Deployment — e.g. Docker, VPS, n8n</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         SOP (STANDARD OPERATING PROCEDURE)
+         EDIT ME: document the step-by-step procedure for this project.
+    ================================================================ -->
+    <section class="section">
+      <div class="section-inner">
+        <p class="eyebrow center reveal">03 · Process</p>
+        <h2 class="section-title center reveal">Standard Operating <span class="gradient-text">Procedure (SOP)</span></h2>
+        <p class="contact-lead reveal">
+          The repeatable process used to build, run, or maintain this project.
+        </p>
+
+        <div class="sop-list">
+          <!-- EDIT ME: add / remove / reorder steps as needed -->
+          <div class="sop-item reveal">
+            <span class="sop-num">01</span>
+            <div class="sop-body">
+              <h3>Step Name</h3>
+              <p>Describe what is done in this step, who does it, and what the expected output is.</p>
+            </div>
+          </div>
+          <div class="sop-item reveal">
+            <span class="sop-num">02</span>
+            <div class="sop-body">
+              <h3>Step Name</h3>
+              <p>Describe what is done in this step, who does it, and what the expected output is.</p>
+            </div>
+          </div>
+          <div class="sop-item reveal">
+            <span class="sop-num">03</span>
+            <div class="sop-body">
+              <h3>Step Name</h3>
+              <p>Describe what is done in this step, who does it, and what the expected output is.</p>
+            </div>
+          </div>
+          <div class="sop-item reveal">
+            <span class="sop-num">04</span>
+            <div class="sop-body">
+              <h3>Step Name</h3>
+              <p>Describe what is done in this step, who does it, and what the expected output is.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- EDIT ME: optional notes / things to watch out for -->
+        <div class="prose-card reveal">
+          <h3>Notes &amp; Caveats</h3>
+          <p>Anything a future implementer should know: edge cases, known limitations, key config values, or maintenance tips.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> Yashas Pareeshwad. Built with love and care.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
