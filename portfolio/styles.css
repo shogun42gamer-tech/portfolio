@@ -272,23 +272,12 @@ img { max-width: 100%; display: block; }
   align-items: start;
 }
 .about-portrait { position: sticky; top: 5rem; }
-.portrait-placeholder {
+.portrait-img {
   aspect-ratio: 4 / 5;
+  width: 100%;
+  object-fit: cover;
   border-radius: var(--radius-lg);
-  background:
-    linear-gradient(160deg, rgba(124, 92, 255, 0.25), rgba(34, 211, 238, 0.15)),
-    var(--card);
   border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-family: var(--font-heading);
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  font-size: 1.1rem;
 }
 .about-text p { color: var(--text-dim); margin-bottom: 1rem; max-width: 60ch; }
 .about-facts { margin: 1.5rem 0; display: grid; gap: 0.6rem; }
