@@ -1,4 +1,4 @@
-// Portfolio interactions: nav, mobile menu, scroll reveals, progress bars, form.
+// Portfolio interactions: nav, mobile menu, scroll reveals, progress bars.
 
 (function () {
   'use strict';
@@ -84,23 +84,4 @@
   // ---------- Footer year ----------
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
-
-  // ---------- Contact form (opens the visitor's email app) ----------
-  // For a real backend, replace the body of this handler with your own
-  // form submission (e.g. Formspree, Netlify Forms, or an API call).
-  var form = document.getElementById('contact-form');
-  if (form) {
-    form.addEventListener('submit', function (event) {
-      event.preventDefault();
-      var data = new FormData(form);
-      var subject = encodeURIComponent(data.get('subject') || 'Project inquiry');
-      var body = encodeURIComponent(
-        'Name: ' + (data.get('name') || '') + '\n' +
-        'Email: ' + (data.get('email') || '') + '\n\n' +
-        (data.get('message') || '')
-      );
-      // EDIT ME: replace with your email address.
-      window.location.href = 'mailto:you@example.com?subject=' + subject + '&body=' + body;
-    });
-  }
 })();

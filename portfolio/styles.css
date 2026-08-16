@@ -206,6 +206,12 @@ img { max-width: 100%; display: block; }
   letter-spacing: -0.02em;
   max-width: 900px;
 }
+.hero-title .gradient-text {
+  display: block;
+  font-size: 0.55em;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
 .hero-sub {
   margin-top: 1.5rem;
   max-width: 560px;
@@ -674,21 +680,40 @@ img { max-width: 100%; display: block; }
 .form-note { color: var(--text-dim); font-size: 0.9rem; }
 .form-note a { color: var(--accent-2); }
 
-/* ---------- Socials & Footer ---------- */
-.socials {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-top: 2.5rem;
-  flex-wrap: wrap;
+/* ---------- Contact list & Footer ---------- */
+.contact-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-width: 560px;
+  margin: 0 auto;
 }
-.socials a {
-  color: var(--text-dim);
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.3rem;
+  color: var(--text);
   font-family: var(--font-heading);
   font-weight: 600;
-  transition: color 0.2s ease;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
 }
-.socials a:hover { color: var(--accent-2); }
+.contact-item:hover {
+  border-color: var(--accent-1);
+  color: var(--accent-2);
+  transform: translateY(-2px);
+}
+.contact-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+  color: var(--accent-1);
+}
+.contact-item:hover .contact-icon { color: var(--accent-2); }
 
 .footer {
   border-top: 1px solid var(--border);
