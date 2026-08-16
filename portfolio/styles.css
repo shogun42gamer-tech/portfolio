@@ -265,33 +265,57 @@ img { max-width: 100%; display: block; }
 }
 
 /* ---------- About ---------- */
-.about-grid {
+.about-grid { display: block; }
+.about-text {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+.about-text p {
+  color: var(--text-dim);
+  margin-bottom: 1rem;
+  max-width: 60ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+.about-facts {
+  margin: 2rem 0;
   display: grid;
-  grid-template-columns: minmax(260px, 340px) 1fr;
-  gap: 3.5rem;
-  align-items: start;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
 }
-.about-portrait { position: sticky; top: 5rem; }
-.portrait-img {
-  aspect-ratio: 4 / 5;
-  width: 100%;
-  object-fit: cover;
-  border-radius: var(--radius-lg);
+.fact {
+  background: var(--card);
   border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1rem;
+  text-align: center;
 }
-.about-text p { color: var(--text-dim); margin-bottom: 1rem; max-width: 60ch; }
-.about-facts { margin: 1.5rem 0; display: grid; gap: 0.6rem; }
-.about-facts li { color: var(--text); }
 .fact-label {
+  display: block;
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin-right: 0.4rem;
+  margin-bottom: 0.4rem;
 }
-.about-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+.fact-value {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.about-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
 
 /* ---------- Skills ---------- */
 .skills-grid {
@@ -725,13 +749,12 @@ img { max-width: 100%; display: block; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
-  .about-grid { grid-template-columns: 1fr; gap: 2rem; }
-  .about-portrait { position: static; max-width: 340px; }
   .skills-grid { grid-template-columns: 1fr; }
   .projects-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 640px) {
+  .about-facts { grid-template-columns: 1fr; }
   .nav-links {
     position: fixed;
     top: 0;
